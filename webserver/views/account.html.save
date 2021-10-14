@@ -1,0 +1,512 @@
+{{##def.page_title = 'Your account' #}}
+{{##def.content:
+<script type="text/javascript">
+    window.onload = function () {
+        if (document.getElementById('confirmation') !== null) {
+            document.getElementById('confirmation').onchange = validatePassword;
+            document.getElementById('password').onchange = validatePassword;
+        }
+    };
+    function validatePassword() {
+        var password = document.getElementById('new_password').value;
+        var confirm = document.getElementById('confirmation').value;
+        if (password != confirm) {
+            document.getElementById('confirmation').setCustomValidity("Confirmation and password should be the same");
+        } else document.getElementById("confirmation").setCustomValidity('');
+    }
+    function logout() {
+        if (document.getElementById('logout') ) {
+            if (confirm("Are you sure you want to log out?")) {
+                document.getElementById("logout").submit();
+            }
+        }
+    }
+</script>
+<form action="/logout" method="post" id='logout'></form>
+<div class="content row panel radius">
+ 
+    <div class="settings">
+    
+        <div class="col-md-12 col-sm-12">
+            <div class="col-md-6 col-sm-12">
+                <div calss="account">
+                    <div class="box">
+                        <a class="button arrow" href="#account">Account</a>
+                    </div>
+                    <div class="bg-overlay" id="account">
+                        <div class="subscribe-optin">
+                            <h5>Account</h5>
+                    
+                    <p class="account">
+                        <b>Deposit Address:</b>
+                        <input type="text" value="{{=it.user.deposit_address}}" readonly>
+                        <!-- <a href="ethereum:{{=it.user.deposit_address}}?message=deposit">Ethereum link</a> -->
+                        <a href="https://etherscan.io/address/{{=it.user.deposit_address}}" target="_blank">etherscan explore</a>
+                    </p>
+                    <div class="row">
+                        <div class="large-5 columns">
+                            <img class="show-for-medium-up qr" src="https://blockchain.info/qr?data={{=it.user.deposit_address}}&size=150" alt=""/>
+                        </div>
+                
+                    </div>
+                    <br>
+                    <h5>Account Information</h5>
+                    <div id="statistics" class="row">
+                        <div class="data col-md-3 col-sm-12">
+                            <p><b>Deposits </b></p>
+                            <h6>{{#def.format:{n: it.user.depositsSum, decimals:2} }} WoW</h6>
+                        </div>
+                        <div class="data col-md-3 col-sm-12">
+                            <p><b>Withdrawals </b></p>
+                            <h6>{{#def.format:{n: it.user.withdrawlsSum, decimals:2} }} WoW</h6>
+                        </div>
+                        <div class="data col-md-3 col-sm-12">
+                            <p><b>Bonus</b></p>
+                            <h6>{{#def.format:{n: it.user.giveaways, decimals:2} }}</h6>
+                        </div>
+                        <div class="data col-md-3 col-sm-12">
+                            <p><b>Net Profit</b></p>
+                            <h6>{{#def.format:{n: it.user.net_profit, decimals:2} }} WoW</h6>
+                        </div>
+                    </div>
+
+                    <br>
+                    
+                            <a href="#" class="optin-close">&times;</a>
+                        </div>
+                    </div>
+                </div><!-- end acccount -->                
+                <div class="deposit">
+                    <div class="box">
+                        <a class="button arrow" href="#deposit-popup">Deposit</a>
+                    </div>
+		
+                    <div class="bg-overlay" id="deposit-popup">
+                                <div class="subscribe-optin">
+                                    <h5 class="">Deposit History</h5>
+                               
+                                <p class="account">
+                                    <b>Deposit Address:</b>
+                                    <input type="text" value="{{=it.user.deposit_address}}" readonly>
+                                    <!-- <a href="ethereum:{{=it.user.deposit_address}}?message=deposit">Ethereum link</a> -->
+                                    <a href="https://etherscan.io/address/{{=it.user.deposit_address}}">Ethereum link</a>
+                                </p>
+                                {{?it.user.deposits.length > 0}}
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <td>WoW</td>
+                                                <td>Transaction</td>
+                                                <td class="show-for-medium-up">Created</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{~it.user.deposits :deposit:index}}
+                                                <tr>
+                                                    <td>{{#def.format: {n: deposit.amount, decimals: 2 } }}</td>
+                            <td><a href="https://etherscan.io/tx/{{=deposit.ethereum_deposit_txid}}" target="_blank">View</a></td>
+                                                    <td class="show-for-medium-up">{{=deposit.created}}</td>
+                                                </tr>
+                                            {{~}}
+                                        </tbody>
+                                    </table>
+                                {{??}}
+                                    <p>You don't have deposits</p>
+                                {{?}}
+                                    <a href="#" class="optin-close">&times;</a>
+                                </div>
+                    </div>
+		<div class="bg-overlay" id="depositnew-popup">
+			<div class="subscribe-optin currency deposit">
+				<h5>Deposit Request</h5>
+				<ul>
+				<li><input type="checkbox" id="1" data-trigger="div2" class="trigger" name="ethe"> ETH</li>
+				<li><input type="checkbox" id="2" data-trigger="div1" class="trigger" name="usd"> USD</li>
+				
+				<li><input type="checkbox" id="3" data-trigger="div1" class="trigger" name="krw"> KRW</li>
+					
+				<li><input type="checkbox" id="4" data-trigger="div1" class="trigger" name="vnd"> VND</li>
+				
+				</ul>
+			<div id="div1" class="hidden mid_padding">
+				<div class="col-md-6">
+				<p>Please Input the amount</p>
+				<input type="text" name="currency-amt" id="usdamt" class="form-control currencychange">USD
+				<input type="text" name="wow-amt" id="wowamt" class="form-control">WoW<br/>
+				<p>Please input the deposit's name</p>
+				<input type="text" name="deposit-name" class="form-control">
+				</div>
+				<div class="col-md-6">
+				<p>Deposit Address</p>
+				<label>Bank Info</label>
+				<input type="text" name="bankname" class="form-control">
+				<label>Account Owner</label>
+				<input type="text" name="name" class="form-control">
+				<label>Account Address</label>
+				<input type="text" name="acctaddress" class="form-control">
+	
+				<input type="submit" class="right btn btn-success" value="Submit"><br/>
+				</div>
+			</div>
+			<div id="div2" class="hidden mid_padding">
+				<p>ETH Deposit is made by automatic, just input the ethereum at your deposit address.</p>
+				<input type="text" value="{{=it.user.deposit_address}}" readonly>
+                                    
+                                    <a href="https://etherscan.io/address/{{=it.user.deposit_address}}">Ethereum link</a>
+				<input type="submit" class="right btn btn-success" value="Done">
+			</div>
+			<a href="#" class="optin-close">&times;</a>
+			</div>
+		</div>
+                </div><!-- end deposit -->
+                
+                <!-- Start Tip -->
+                <div class="tip">
+                    <div class="box">
+                        <a class="button arrow" href="#tip">Tip</a>
+                    </div>
+                    <div class="bg-overlay" id="tip">
+                                <div class="subscribe-optin">
+                                    <a class="border-button right green" href="#tip-send">Send Tip</a>
+                                    <h5 >Tip History</h5>
+                                    <hr>
+                                {{?it.user.tips.length > 0}}    
+                                <div class="tableFixHead">    
+                                 <table>
+                                    <thead>
+                                        <tr>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Amount</th>
+                                            <th>Commission</th>
+                                            <th class="show-for-large-up">Transaction ID</th>
+                                            <th class="show-for-large-up">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{~it.user.tips :tip:index}}
+                                            <tr>
+                                                <td>{{=tip.sender}}</td>
+                                                <td>{{=tip.recipient}}</td>
+                                                <td>{{#def.format: {n: tip.amount, decimals: 2 } }}</td>
+                                                <td>{{#def.format: {n: tip.commission, decimals: 2 } }}</td>
+                                                <td class="show-for-large-up">{{=tip.tipTxId}}</td>
+                                                <td class="show-for-large-up">{{=tip.created}}</td>
+                                            </tr>
+                                        {{~}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {{??}}
+                              <br>
+                            <br>
+                            <br>
+                            <p>You have no tip history in your account.</p>
+                            {{?}}
+                                    <a href="#" class="optin-close">&times;</a>
+                                </div>
+                    
+                   </div> 
+                   <!-- End Tip -->
+                   <!-- Success Tip -->
+                   <div class="tip">                    
+                        <div class="bg-overlay" id="tip-send-successfully">
+                                <div class="subscribe-optin">
+                                    <h4>Tip Sent Successfully.</h4>
+                                    <a href="#" class="optin-close">&times;</a>                                    
+                                </div>                    
+                        </div> 
+                    </div> 
+                    <!-- End Success Tip -->
+
+                    <div class="bg-overlay" id="tip-send">
+                         <div class="subscribe-optin">
+                            <h5>Send Tip</h5>
+                            <p>You can send the tip as much as you want, to whomever you want.<br/>
+                            Tip will be delivered to the designated User ID immediately, and cannot be returned.</br>
+                            Recheck before submit.</p>
+                            <form action="/tip-send" method="post">
+                                <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+                                <input style="display:none" type="text" name="fakeusernameremembered"/>
+                                <input style="display:none" type="password" name="fakepasswordremembered"/>
+
+                                <input type="hidden" name="tipTxId" value="{{= it.id}}" />
+                                <label for="amount">Amount</label>
+                                <input type="text"  id="your_amount" name="your_amount"  placeholder="{{= it.tipFee }}" min="{{= it.tipFee }}"  required/>
+                                <label for="recipient">Recipient User ID</label>
+                                <input type="text" id="recipient" name="recipient" required/>
+                                <label for="password">Your Password</label>
+                                <input type="password" id="your_password" name="your_password" autocomplete="off"/>
+                                {{?it.user.mfa_secret}}
+                                    <label for="otp">2FA Code</label>
+                                    <input type="text" id="otp" name="otp" autocomplete="off" pattern="[0-9]{6}" required />
+                                {{?}}
+                                <a href="#tip" class="border-button ">Back</a>
+
+                                <script>
+                                    var i = 2;
+                                    $(document).ready(function(){
+                                        $("#your_amount").on("keypress", function(event) {                                           
+                                           var that = $("#your_amount").val();                                           
+                                           if (event.which < 48 || event.which > 57) {
+                                                event.preventDefault();
+                                            } else {
+                                                $(this).val($(this).val().replace(/[^\d].+/, ""));
+                                            }                                            
+                                        });
+                                    });
+                                </script>                               
+
+                               <!--Tip send Button unactive STATUS-->
+
+                                <!--input class="border-button right blue" type="submit" value="submit"/ -->
+
+                                <input class="border-button right blue" type="submit" value="submit">
+
+
+                                <!--Tip send save Button unactive STATUS-->
+                            </form>
+                            <a href="#" class="optin-close">&times;</a>
+                        </div>
+                    </div>
+                </div><!-- end support -->
+            </div>
+            <div class="col-md-6 col-sm-12 right-column">
+                <div class="security">
+                    <div class="box">
+                        <a class="button arrow" href="#security">Security</a>
+                    </div>
+                    <div class="bg-overlay" id="security">
+                            <div class="subscribe-optin">
+                                
+                                    
+                                        <div class="col-md-12 col-sm-12">
+                                                <h5>Update Your Password</h5>
+                                                <form action="reset-password" method="post" >
+                                                    <label for="old_password">Old Password</label>
+                                                    <input name="old_password" type="password" id="old_password" autocomplete="off" required/>
+                                                    {{?it.user.mfa_secret}}
+                                                        <label>2FA Code
+                                                            <input name="otp" type="text" pattern="[0-9]{6}" required />
+                                                        </label>
+                                                    {{?}}
+                                                    <label for="password">New Password <span class="small">At least 7 characters</span></label>
+                                                    <input name="password" type="password" id="new_password" pattern=".{7,50}" required/>
+                                                    <label for="confirmation">Confirm Password</label>
+                                                    <input name="confirmation" type="password" id="confirmation" pattern=".{7,50}" required/>
+
+
+
+                                                    <!--Password change save Button unactive STATUS-->
+
+                                                    <input type="submit" class="border-button blue right" value="Change">
+
+                                                    <!--Password change save Button unactive STATUS-->
+
+
+                                                </form>
+
+                                        </div>
+                                       
+                                        
+                                   
+                                
+                        <hr>
+                       
+                                <a href="#" class="optin-close">&times;</a>
+                            </div>
+                    </div>
+                </div><!-- end security -->
+                <div class="withdraw">
+                    <div class="box">
+                        <a class="button arrow" href="#withdraw">Withdraw</a>
+                    </div>
+		<div class="bg-overlay" id="withdrawnew">
+			<div class="subscribe-optin currency">
+			<h5>Withdrawal Request</h5>
+			<ul>
+				<li><input type="radio" id="3" class="withdrawal" name="ethe"> ETH</li>
+				<li><input type="radio" id="4" class="withdrawal" name="usd"> USD</li>
+				<li><input type="radio" id="4" class="withdrawal" name="krw"> KRW</li>
+				<li><input type="radio" id="4" class="withdrawal" name="vnd"> VND</li>
+			</ul>
+			<div id="div3" class="mid_padding">
+				<label>Please input the amount</label>
+				<input type="text" name="wowamt" class="form-control">
+				<p>Please input the bank account information</p>
+				<label>Country</label>
+				<input type="text" name="country" class="form-control">
+				<label>Bank Name</label>
+				<input type="text" name="bankname" class="form-control">
+				<label>Owner Name</label>
+				<input type="text" name="name" class="form-control">
+				<label>Account Address</label>
+				<input type="text" name="acctaddress" class="form-control">
+
+				<input type="submit" class="right btn btn-success" value="Submit">
+			</div>
+			<div id="div4" class="mid_padding">
+				<label>Please input the amount</label>
+				<input type="text" name="wowamt" class="form-control">
+
+				<label>Please input the Ethereum Address</label>
+				<input type="text" name="etheaddress" class="form-control">
+
+				<input type="submit" class="right btn btn-success" value="Submit">
+			</div>
+			<a href="#" class="optin-close">&times;</a>
+			</div>
+		</div>
+                    <div class="bg-overlay" id="withdraw">
+                                <div class="subscribe-optin">
+                                    <a class="border-button right green" href="#widthdraw-request">Request Withdraw</a>
+                            <h5 >Withdraw History</h5>
+                            {{?it.user.withdrawals.length > 0}}
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>WoW</td>
+                                            <td>Destination</td>
+                                            <td>Status</td>
+                                            <td class="show-for-large-up">Created</td>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{~it.user.withdrawals :withdrawal:index}}
+                                            <tr>
+                                                <td>{{#def.format: {n: withdrawal.amount*-1, decimals: 2 } }}</td>
+                                                <td>
+                                                    <a href="https://etherscan.io/tx/{{=withdrawal.ethereum_withdrawal_txid}}"  target="_blank">Link</a>
+                                                </td>
+                                                <td>
+                                                    {{?withdrawal.status}}
+                                                         <a href="https://etherscan.io/tx/{{=withdrawal.status}}" target="_blank">Transferred</a>
+                                                    {{??}}
+                                                        in progress
+                                                    {{?}}
+                                                </td>
+                                                <td class="show-for-large-up">{{=withdrawal.created}}</td>
+                                            </tr>
+                                        {{~}}
+                                    </tbody>
+                                </table>
+                            {{??}}
+                                <br>
+                                <br>
+                                <br>
+                                <p>You have no withdrawals in your account.</p>
+                            {{?}}
+                                    <a href="#" class="optin-close">&times;</a>
+                                </div>
+                    </div>
+                    <div class="bg-overlay" id="widthdraw-request">
+                        <div class="subscribe-optin">
+                            <h4>Withdrawal WoW</h4>
+            
+                            <p>
+                                <strong>Note:</strong> If you bet on the current game, some of the balance may not be withdrawn.
+                            </p>
+                            <form action="/withdraw-request" method="post">
+                                <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+                                <input style="display:none" type="text" name="fakeusernameremembered"/>
+                                <input style="display:none" type="password" name="fakepasswordremembered"/>
+
+                                <label for="amount">WoW amount</label>
+                                <input oninput="updateTotal()" type="number" id="amount" name="amount" placeholder="Min {{= it.minWithdraw }} Bits" min="{{= it.minWithdraw }}" step="0.01" required/>
+                                <label for="destination">Destination Address</label>
+                                <input type="text" id="destination" name="destination" required/>
+                                <label for="password">Your password</label>
+                                <input type="password" id="password" name="password" autocomplete="off"/>
+                                {{?it.user.mfa_secret}}
+                                    <label for="otp">2FA Code</label>
+                                    <input type="text" id="otp" name="otp" autocomplete="off" pattern="[0-9]{6}" required />
+                                {{?}}
+
+                                <a href="#withdraw" class="border-button ">Back</a>
+                                <div class="right">
+                                    <span style="font-size: 12px; color:#484848; margin-right: 3px; margin-top: 10px;">FEE: {{= it.miningFee}} WoW // <strong>TOTAL: <span id="total">0</span> WoW</strong></span>
+
+
+                                    <!--Tip send Button unactive STATUS-->
+                                    <!--input class="border-button right blue" type="submit" value="Proceed"/-->
+                                    <!--Tip send Button unactive STATUS-->
+                                </div>
+                                <input type="hidden" name="withdrawal_id" value="{{= it.id}}" />
+                            </form>
+                            <a href="#" class="optin-close">&times;</a>
+                        </div>
+                    </div>
+                </div><!-- end withdraw -->
+                <div class="support">
+                    <div class="box">
+                        <a class="button arrow" href="#support">Support</a>
+                    </div>
+                    <div class="bg-overlay" id="support">
+                                <div class="subscribe-optin">
+                                    <h5>Need help? <br> <br>Please contact to <br> <br>Telegram @wowgohelper</h5>
+                                    <a href="#" class="optin-close">&times;</a>
+                                </div>
+                    </div>
+                </div><!-- end support -->
+               
+            </div>
+         </div>  
+    <div class="col-md-12 col-sm-12 nopadding right-column">
+         <div class="col-md-6 col-sm-12 center">
+            <div class="logout">
+                <div class="box">
+                    <a onclick="logout();" class="logout-btn">
+                        Logout
+                    </a>
+                </div>
+            </div><!-- end logout -->
+         </div>
+    </div>
+    </div> 
+
+    
+    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+	$(function() {
+  $('.hidden').hide();
+  $('.trigger').change(function() {  
+    var hiddenId = $(this).attr("data-trigger");
+    if ($(this).is(':checked')) {      
+      $("#" + hiddenId).show();
+    } else {     
+      $("#" + hiddenId).hide();          
+    }
+  });
+});
+</script>
+<script>
+$(document).ready(function(){	
+
+
+
+});
+</script>
+<script>
+
+   $(document).ready(function() {
+  
+
+	$(".withdrawal").on("change", function() {
+   if ($('.withdrawal#3').is(':checked')) {  
+    $('#div4').show("slow");        
+    $('#div3').hide();                   
+
+
+    } else if ($(".withdrawal#4").is(":checked")) {
+    $('#div3').show("slow");
+    $('#div4').hide();
+    }
+    });
+
+    });
+
+</script>
+#}}
+{{#def.include('./template/main_new')}}

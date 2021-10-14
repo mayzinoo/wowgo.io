@@ -1,0 +1,1068 @@
+{{##def.page_title = 'Your account' #}}
+{{##def.content:
+<script type="text/javascript">
+    window.onload = function () {
+        if (document.getElementById('confirmation') !== null) {
+            document.getElementById('confirmation').onchange = validatePassword;
+            document.getElementById('password').onchange = validatePassword;
+        }
+    };
+    function validatePassword() {
+        var password = document.getElementById('new_password').value;
+        var confirm = document.getElementById('confirmation').value;
+        if (password != confirm) {
+            document.getElementById('confirmation').setCustomValidity("Confirmation and password should be the same");
+        } else document.getElementById("confirmation").setCustomValidity('');
+    }
+    function logout() {
+        if (document.getElementById('logout') ) {
+            if (confirm("Are you sure you want to log out?")) {
+                document.getElementById("logout").submit();
+            }
+        }
+    }
+</script>
+
+<form action="/logout" method="post" id='logout'></form>
+<div class="content row panel radius">
+ 
+    <div class="settings">
+    
+        <div class="col-md-12 col-sm-12">
+            <div class="col-md-6 col-sm-12">
+                <div calss="account">
+                    <div class="box">
+                        <a class="button arrow" href="#account">Account</a>
+                    </div>
+                    <div class="bg-overlay" id="account">
+                        <div class="subscribe-optin">
+                            <h5>Account</h5>
+                    
+                    <p class="account">
+                        <b>Deposit Address:</b>
+                        <input type="text" value="{{=it.user.deposit_address}}" readonly>
+                        <!-- <a href="ethereum:{{=it.user.deposit_address}}?message=deposit">Ethereum link</a> -->
+                        <a href="https://etherscan.io/address/{{=it.user.deposit_address}}" target="_blank">etherscan explore</a>
+                    </p>
+                    <div class="row">
+                        <div class="large-5 columns">
+                            <img class="show-for-medium-up qr" src="https://blockchain.info/qr?data={{=it.user.deposit_address}}&size=150" alt=""/>
+                        </div>
+                
+                    </div>
+                    <br>
+                    <h5>Account Information</h5>
+                    <div id="statistics" class="row">
+                        <div class="data col-md-3 col-sm-12">
+                            <p><b>Deposits </b></p>
+                            <h6>{{#def.format:{n: it.user.depositsSum, decimals:2} }} WoW</h6>
+                        </div>
+                        <div class="data col-md-3 col-sm-12">
+                            <p><b>Withdrawals </b></p>
+                            <h6>{{#def.format:{n: it.user.withdrawlsSum, decimals:2} }} WoW</h6>
+                        </div>
+                        <div class="data col-md-3 col-sm-12">
+                            <p><b>Bonus</b></p>
+                            <h6>{{#def.format:{n: it.user.giveaways, decimals:2} }}</h6>
+                        </div>
+                        <div class="data col-md-3 col-sm-12">
+                            <p><b>Net Profit</b></p>
+                            <h6>{{#def.format:{n: it.user.net_profit, decimals:2} }} WoW</h6>
+                        </div>
+                    </div>
+
+                    <br>
+                    
+                            <a href="#" class="optin-close">&times;</a>
+                        </div>
+                    </div>
+                </div><!-- end acccount -->                
+                <div class="deposit">
+                    <div class="box">
+                        <a class="button arrow" href="#depositnew-popup">Deposit</a>
+                    </div>
+		
+                    <div class="bg-overlay" id="deposit-popup">
+                                <div class="subscribe-optin">
+                                    <h5 class="">Deposit History</h5>
+                               
+                                <p class="account">
+                                    <b>Deposit Address:</b>
+                                    <input type="text" value="{{=it.user.deposit_address}}" readonly>
+                                    <!-- <a href="ethereum:{{=it.user.deposit_address}}?message=deposit">Ethereum link</a> -->
+                                    <a href="https://etherscan.io/address/{{=it.user.deposit_address}}">Ethereum link</a>
+                                </p>
+                                {{?it.user.deposits.length > 0}}
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <td>WoW</td>
+                                                <td>Transaction</td>
+                                                <td class="show-for-medium-up">Created</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{~it.user.deposits :deposit:index}}
+                                                <tr>
+                                                    <td>{{#def.format: {n: deposit.amount, decimals: 2 } }}</td>
+                            <td><a href="https://etherscan.io/tx/{{=deposit.ethereum_deposit_txid}}" target="_blank">View</a></td>
+                                                    <td class="show-for-medium-up">{{=deposit.created}}</td>
+                                                </tr>
+                                            {{~}}
+                                        </tbody>
+                                    </table>
+                                {{??}}
+                                    <p>You don't have deposits</p>
+                                {{?}}
+                                    <a href="#" class="optin-close">&times;</a>
+                                </div>
+                    </div>
+		<div class="bg-overlay" id="depositnew-popup">
+			<div class="subscribe-optin currency deposit">
+                <form action="/deposit-request" method="post">
+				<h5>Deposit Request</h5>
+				<ul>              
+                
+				<li><input type="radio" checked="checked" value="ETH" id="1" data-trigger="div2" class="trigger" name="currency_type"> ETH</li>
+				<li><input type="radio" value="USD" id="2" data-trigger="div1" class="trigger" name="currency_type"> USD</li>
+				
+				<li><input type="radio" value="KRW" id="3" data-trigger="div1" class="trigger" name="currency_type"> KRW</li>
+					
+				<li><input type="radio" value="VND" id="4" data-trigger="div1" class="trigger" name="currency_type"> VND</li>
+				
+				</ul>
+			     <p id="usd"></p>
+            
+    			<div id="dep_usd" style="display: none;" class="hidden mid_padding">				
+    				<div class="offset-md-2 col-md-9">					
+    				<p>Please Input the amount</p>
+    				<div class="row nopadding">
+    					<div class="col-md-10">
+    						<input type="text" name="usd_currency_amt" id="usdamt" class="form-control currencychange">
+    					</div>
+    					<div class="col-md-2" style="margin-top:14px;">
+    						USD
+    					</div>
+    				</div>
+    				<div class="row nopadding">
+    					<div class="col-md-10">
+    						<input type="text" name="usd_wow_amt" id="wowamt" class="form-control">
+    					</div>
+    					<div class="col-md-2" style="margin-top:14px;">
+    						WoW
+    					</div>
+    				</div>
+    				
+    				<p>Please input the deposit's name</p>
+    				<input type="text" name="usd_deposit_name" class="form-control"> 			
+    				
+    				</div>
+    				
+    			</div>
+
+                <div id="dep_krw" style="display: none;" class="hidden mid_padding">                
+                    <div class="offset-md-2 col-md-9">                  
+                    <p>Please Input the amount</p>
+                    <div class="row nopadding">
+                        <div class="col-md-10">
+                            <input type="text" name="krw_currency_amt" id="krwamt" class="form-control currencychange">
+                        </div>
+                        <div class="col-md-2" style="margin-top:10px;">
+                            KRW
+                        </div>
+                    </div>
+                    <div class="row nopadding">
+                        <div class="col-md-10">
+                            <input type="text" name="krw_wow_amt" id="krw_wow_amt" class="form-control">
+                        </div>
+                        <div class="col-md-2" style="margin-top:10px;">
+                            WoW
+                        </div>
+                    </div>
+                    
+                    <p>Please input the deposit's name</p>
+                    <input type="text" name="krw_deposit_name" class="form-control">                    
+                
+                    
+                    </div>  
+                    
+                </div>
+
+                <div id="dep_vnd" style="display: none;" class="hidden mid_padding">                
+                    <div class="offset-md-2 col-md-9">                  
+                    <p>Please Input the amount</p>
+                    <div class="row nopadding">
+                        <div class="col-md-10">
+                            <input type="text" name="vnd_currency_amt" id="vndamt" class="form-control currencychange">
+                        </div>
+                        <div class="col-md-2" style="margin-top:10px;">
+                            VND
+                        </div>
+                    </div>
+                    <div class="row nopadding">
+                        <div class="col-md-10">
+                            <input type="text" name="vnd_wow_amt" id="vnd_wow_amt" class="form-control">
+                        </div>
+                        <div class="col-md-2" style="margin-top:10px;">
+                            WoW
+                        </div>
+                    </div>
+                    
+                    <p>Please input the deposit's name</p>
+                    <input type="text" name="vnd_deposit_name" class="form-control">                    
+                
+                    
+                    </div>  
+                    
+                </div>
+           		
+    			<div id="dep_eth" class="hidden mid_padding">
+    				<p>ETH Deposit is made by automatic, just input the ethereum at your deposit address.</p>
+    				<input type="text" name="eth_address" value="{{=it.user.deposit_address}}" readonly>
+                                        
+                        <a href="https://etherscan.io/address/{{=it.user.deposit_address}}">Ethereum link</a>
+    				<!-- <input type="submit" class="right btn btn-success" value="Done"> -->
+    			</div>
+                <!-- <a href="#admininfo" class="right btn btn-success">Submit</a> -->
+                    <input type="submit" name="dep-request" value="Submit" class="right btn btn-success">
+            </form>
+			<a href="#" class="optin-close">&times;</a>
+			</div>
+		</div>
+
+    </div><!-- end deposit -->
+
+    <!-- Success Withdraw -->
+        <div class="bg-overlay" id="successwithdraw">
+            <div class="subscribe-optin">
+                <h5>Withdraw Request Successful</h5>
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                       Successfully Request Withdraw.
+                    </div>                    
+                </div>                
+                <a href="#" class="optin-close">&times;</a>
+            </div>
+        </div> 
+        <div class="bg-overlay" id="successcancelwithdraw">
+            <div class="subscribe-optin">
+                <h5>Withdraw Cancel Successful</h5>
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                       Successfully Cancel Withdraw.
+                    </div>                    
+                </div>                
+                <a href="#" class="optin-close">&times;</a>
+            </div>
+        </div> 
+    <!-- End Success Withdraw -->
+
+    <!-- Admin Info USD Start -->
+        <div class="bg-overlay" id="admininfo_usd">
+			<div class="subscribe-optin">
+				<h5>Deposit Address</h5>
+				<div class="col-md-12">
+					<div class="col-md-4">
+						<label>Bank Info</label>
+					</div>
+					<div class="col-md-8">
+					
+						<p>{{=it.user.bankinfousd[0]['bankname']}}</p>
+					</div>
+					<div class="col-md-4">
+						<label>Account owner</label>
+					</div>
+					<div class="col-md-8">
+						<p>{{=it.user.bankinfousd[0]['acctowner']}}</p>
+					</div>
+					<div class="col-md-4">
+						<label>Account Number</label>
+					</div>
+					<div class="col-md-8">
+						<p>{{=it.user.bankinfousd[0]['acctno']}}</p>
+					</div>
+				</div>
+				
+				<a href="#" class="optin-close">&times;</a>
+			</div>
+		</div> 
+		<!-- Admin Info USD Start -->
+
+        <!-- Admin Info KRW Start -->
+        <div class="bg-overlay" id="admininfo_krw">
+            <div class="subscribe-optin">
+                <h5>Deposit Address</h5>
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <label>Bank Info</label>
+                    </div>
+                    <div class="col-md-8">
+                    
+                        <p>{{=it.user.bankinfokrw[0]['bankname']}}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Account owner</label>
+                    </div>
+                    <div class="col-md-8">
+                        <p>{{=it.user.bankinfokrw[0]['acctowner']}}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Account Number</label>
+                    </div>
+                    <div class="col-md-8">
+                        <p>{{=it.user.bankinfokrw[0]['acctno']}}</p>
+                    </div>
+                </div>
+                
+                <a href="#" class="optin-close">&times;</a>
+            </div>
+        </div> 
+        <!-- Admin Info KRW Start -->
+        <div class="bg-overlay" id="admininfo_vnd">
+            <div class="subscribe-optin">
+                <h5>Deposit Address</h5>
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <label>Bank Info</label>
+                    </div>
+                    <div class="col-md-8">
+                    
+                        <p>{{=it.user.bankinfovnd[0]['bankname']}}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Account owner</label>
+                    </div>
+                    <div class="col-md-8">
+                        <p>{{=it.user.bankinfovnd[0]['acctowner']}}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Account Number</label>
+                    </div>
+                    <div class="col-md-8">
+                        <p>{{=it.user.bankinfovnd[0]['acctno']}}</p>
+                    </div>
+                </div>
+                
+                <a href="#" class="optin-close">&times;</a>
+            </div>
+        </div> 
+
+        <div class="bg-overlay" id="admininfo_eth">
+            <div class="subscribe-optin">
+                <h5>Deposit Address</h5>
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <label>Address</label>
+                    </div>
+                    <div class="col-md-8">                    
+                        <p>{{=it.user.bankinfoeth[0]['address']}}</p>
+                    </div>
+                    
+                </div>
+                
+                <a href="#" class="optin-close">&times;</a>
+            </div>
+        </div> 
+        
+        <!-- Admin Info ETH Start -->
+
+
+
+
+                </div><!-- end deposit -->
+                <div class="bg-overlay" id="admininfo">
+                <div class="subscribe-optin">
+                    <h5>Deposit Address</h5>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <label>Bank Info</label>
+                        </div>
+                        <div class="col-md-8">
+                        
+                            <input type="text" name="bankname" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Account owner</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="name" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Account Number</label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" name="acctno" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="optin-close">&times;</a>
+                </div>
+                </div> 
+		
+
+                <!-- Start Tip -->
+                <div class="tip">
+                    <div class="box">
+                        <a class="button arrow" href="#tip">Tip</a>
+                    </div>
+                    <div class="bg-overlay" id="tip">
+                                <div class="subscribe-optin">
+                                    <a class="border-button right green" href="#tip-send">Send Tip</a>
+                                    <h5 >Tip History</h5>
+                                    <hr>
+                                {{?it.user.tips.length > 0}}    
+                                <div class="tableFixHead">    
+                                 <table>
+                                    <thead>
+                                        <tr>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Amount</th>
+                                            <th>Commission</th>
+                                            <th class="show-for-large-up">Transaction ID</th>
+                                            <th class="show-for-large-up">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{~it.user.tips :tip:index}}
+                                            <tr>
+                                                <td>{{=tip.sender}}</td>
+                                                <td>{{=tip.recipient}}</td>
+                                                <td>{{#def.format: {n: tip.amount, decimals: 2 } }}</td>
+                                                <td>{{#def.format: {n: tip.commission, decimals: 2 } }}</td>
+                                                <td class="show-for-large-up">{{=tip.tipTxId}}</td>
+                                                <td class="show-for-large-up">{{=tip.created}}</td>
+                                            </tr>
+                                        {{~}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {{??}}
+                              <br>
+                            <br>
+                            <br>
+                            <p>You have no tip history in your account.</p>
+                            {{?}}
+                                    <a href="#" class="optin-close">&times;</a>
+                                </div>
+                    
+                   </div> 
+                   <!-- End Tip -->
+                   <!-- Success Tip -->
+                   <div class="tip">                    
+                        <div class="bg-overlay" id="tip-send-successfully">
+                                <div class="subscribe-optin">
+                                    <h4>Tip Sent Successfully.</h4>
+                                    <a href="#" class="optin-close">&times;</a>                                    
+                                </div>                    
+                        </div> 
+                    </div> 
+                   
+                    <!-- End Success Tip -->
+
+                    <div class="bg-overlay" id="tip-send">
+                         <div class="subscribe-optin">
+                            <h5>Send Tip</h5>
+                            <p>You can send the tip as much as you want, to whomever you want.<br/>
+                            Tip will be delivered to the designated User ID immediately, and cannot be returned.</br>
+                            Recheck before submit.</p>
+                            <form action="/tip-send" method="post">
+                                <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+                                <input style="display:none" type="text" name="fakeusernameremembered"/>
+                                <input style="display:none" type="password" name="fakepasswordremembered"/>
+
+                                <input type="hidden" name="tipTxId" value="{{= it.id}}" />
+                                <label for="amount">Amount</label>
+                                <input type="text"  id="your_amount" name="your_amount"  placeholder="{{= it.tipFee }}" min="{{= it.tipFee }}"  required/>
+                                <label for="recipient">Recipient User ID</label>
+                                <input type="text" id="recipient" name="recipient" required/>
+                                <label for="password">Your Password</label>
+                                <input type="password" id="your_password" name="your_password" autocomplete="off"/>
+                                {{?it.user.mfa_secret}}
+                                    <label for="otp">2FA Code</label>
+                                    <input type="text" id="otp" name="otp" autocomplete="off" pattern="[0-9]{6}" required />
+                                {{?}}
+                                <a href="#tip" class="border-button ">Back</a>
+
+                                <script>
+                                    var i = 2;
+                                    $(document).ready(function(){
+                                        $("#your_amount").on("keypress", function(event) {                                           
+                                           var that = $("#your_amount").val();                                           
+                                           if (event.which < 48 || event.which > 57) {
+                                                event.preventDefault();
+                                            } else {
+                                                $(this).val($(this).val().replace(/[^\d].+/, ""));
+                                            }                                            
+                                        });
+                                    });
+                                </script>                               
+
+                               <!--Tip send Button unactive STATUS-->
+
+                                <!--input class="border-button right blue" type="submit" value="submit"/ -->
+
+                                <input class="border-button right blue" type="submit" value="submit">
+
+
+                                <!--Tip send save Button unactive STATUS-->
+                            </form>
+                            <a href="#" class="optin-close">&times;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <div class="box">
+                        <a class="button arrow" href="/referral">Referral</a>
+                    </div>
+                </div>
+                <!-- end support -->
+            
+
+            <div class="col-md-6 col-sm-12 right-column">
+                <div class="security">
+                    <div class="box">
+                        <a class="button arrow" href="#security">Security</a>
+                    </div>
+                    <div class="bg-overlay" id="security">
+                            <div class="subscribe-optin">
+                                
+                                    
+                                        <div class="col-md-12 col-sm-12">
+                                                <h5>Update Your Password</h5>
+                                                <form action="reset-password" method="post" >
+                                                    <label for="old_password">Old Password</label>
+                                                    <input name="old_password" type="password" id="old_password" autocomplete="off" required/>
+                                                    {{?it.user.mfa_secret}}
+                                                        <label>2FA Code
+                                                            <input name="otp" type="text" pattern="[0-9]{6}" required />
+                                                        </label>
+                                                    {{?}}
+                                                    <label for="password">New Password <span class="small">At least 7 characters</span></label>
+                                                    <input name="password" type="password" id="new_password" pattern=".{7,50}" required/>
+                                                    <label for="confirmation">Confirm Password</label>
+                                                    <input name="confirmation" type="password" id="confirmation" pattern=".{7,50}" required/>
+
+
+
+                                                    <!--Password change save Button unactive STATUS-->
+
+                                                    <input type="submit" class="border-button blue right" value="Change">
+
+                                                    <!--Password change save Button unactive STATUS-->
+
+
+                                                </form>
+
+                                        </div>
+                                       
+                                        
+                                   
+                                
+                        <hr>
+                       
+                                <a href="#" class="optin-close">&times;</a>
+                            </div>
+                    </div>
+                </div><!-- end security -->
+                <div class="withdraw">
+                    <div class="box">
+                        <a class="button arrow" href="#withdraw">Withdraw</a>
+                    </div>
+		<div class="bg-overlay" id="withdrawnew">
+			<div class="subscribe-optin currency">
+            <form action="/new-withdraw-request" method="post">
+			<h5>Withdrawal Request</h5>			
+            <ul>               
+                <li><input type="radio" checked="checked" value="ETH" id="1" data-trigger="div2" class="trigger" name="withdraw_currency"> ETH</li>
+                <li><input type="radio" value="USD" id="2" data-trigger="div1" class="trigger" name="withdraw_currency"> USD</li>                
+                <li><input type="radio" value="KRW" id="3" data-trigger="div1" class="trigger" name="withdraw_currency"> KRW</li>                    
+                <li><input type="radio" value="VND" id="4" data-trigger="div1" class="trigger" name="withdraw_currency"> VND</li>                
+                </ul>
+			<div id="with_usd"  style="display: none;" class="hidden mid_padding">
+				<label>Please input the amount</label>
+				<input type="text" name="usd_amount" id="usd_amount" class="form-control">
+                <span name="usd_with_amt" id="usd_with_amt"></span> <input type="hidden" name="usd_change_value" id="usd_change_value">
+                
+				<p>Please input the bank account information</p>
+				<label>Country</label>
+				<input type="text" name="usd_country" class="form-control">
+				<label>Bank Name</label>
+				<input type="text" name="usd_bank_name" class="form-control">
+				<label>Owner Name</label>
+				<input type="text" name="usd_owner_name" class="form-control">
+				<label>Account Address</label>
+				<input type="text" name="usd_account_address" class="form-control">
+			</div>
+            <div id="with_krw"  style="display: none;" class="hidden mid_padding">
+                <label>Please input the amount</label>
+                <input type="text" name="krw_amount" id="krw_amount" class="form-control">
+                <span name="krw_with_amt" id="krw_with_amt"></span><input type="hidden" name="krw_change_value" id="krw_change_value">
+                <p>Please input the bank account information</p>
+                <label>Country</label>
+                <input type="text" name="krw_country" class="form-control">
+                <label>Bank Name</label>
+                <input type="text" name="krw_bank_name" class="form-control">
+                <label>Owner Name</label>
+                <input type="text" name="krw_owner_name" class="form-control">
+                <label>Account Address</label>
+                <input type="text" name="krw_account_address" class="form-control">
+            </div>
+            <div id="with_vnd"  style="display: none;" class="hidden mid_padding">
+                <label>Please input the amount</label>
+                <input type="text" name="vnd_amount" id="vnd_amount" class="form-control">
+                <span name="vnd_with_amt" id="vnd_with_amt"></span><input type="hidden" name="vnd_change_value" id="vnd_change_value">
+                <p>Please input the bank account information</p>
+                <label>Country</label>
+                <input type="text" name="vnd_country" class="form-control">
+                <label>Bank Name</label>
+                <input type="text" name="vnd_bank_name" class="form-control">
+                <label>Owner Name</label>
+                <input type="text" name="vnd_owner_name" class="form-control">
+                <label>Account Address</label>
+                <input type="text" name="vnd_account_address" class="form-control">
+            </div>
+			<div id="with_eth" class="hidden mid_padding">
+				<label>Please input the amount</label>
+				<input type="text" name="eth_amount" class="form-control">
+
+				<label>Please input the Ethereum Address</label>
+				<input type="text" name="eth_etherum_address" class="form-control">			
+			</div>
+
+            <input type="submit" class="right btn btn-success" value="Submit">
+        </form>
+			<a href="#" class="optin-close">&times;</a>
+			</div>
+		</div>
+                    <div class="bg-overlay" id="withdraw">
+                                <div class="subscribe-optin">
+                                    <a class="border-button right green" href="#withdrawnew">Request Withdraw</a>
+                            <h5 >Withdraw History</h5>
+                            {{?it.user.withdrawals.length > 0}}
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>WoW</td>
+                                            <td>Currency</td>
+                                            <td>Destination</td>
+                                            <td>Status</td>
+                                            <td class="show-for-large-up">Created</td>
+                                            <td>Cancel</td>
+                                        </tr>
+                                    </thead>
+                                    <!-- <tbody>
+                                        {{~it.user.withdrawals :withdrawal:index}}
+                                            <tr>
+                                                <td>{{#def.format: {n: withdrawal.amount*-1, decimals: 2 } }}</td>
+                                                <td>
+                                                    <a href="https://etherscan.io/tx/{{=withdrawal.ethereum_withdrawal_txid}}"  target="_blank">Link</a>
+                                                </td>
+                                                <td>
+                                                    {{?withdrawal.status}}
+                                                         <a href="https://etherscan.io/tx/{{=withdrawal.status}}" target="_blank">Transferred</a>
+                                                    {{??}}
+                                                        in progress
+                                                    {{?}}
+                                                </td>
+                                                <td class="show-for-large-up">{{=withdrawal.created}}</td>
+                                            </tr>
+                                        {{~}}
+                                    </tbody> -->
+                                    <tbody>
+                                        {{~it.user.withdrawals :withdrawal:index}}
+                                            <tr>
+                                                <td>{{=withdrawal.amount}}</td>
+                                                <td>{{=withdrawal.currency_type}}</td>
+                                                <td>
+                                                    <!-- <a href="https://etherscan.io/tx/{{=withdrawal.ethereum_withdrawal_txid}}"  target="_blank">Link</a> -->
+                                                    <a href="/withdraw-info/{{=withdrawal.id}}">Link</a>
+                                                </td>
+                                                <td>
+                                                    {{=withdrawal.status}}
+                                                     
+                                                </td>
+                                                <td class="show-for-large-up">{{=withdrawal.created}}</td>
+                                                <form action="/cancel-withdraw" id="withdraw-cancel" name="withdraw-cancel" method="post">
+                                                <td>
+                                                    {{?withdrawal.status == 'In Progress'}}
+                                                         <input type="button" onclick="getConfirmation('{{=withdrawal.id}}');" name="withdraw-cancel" value="Cancel" class="right btn btn-success">
+                                                    {{??}}
+                                                        <input type="button" disabled="disabled"  value="Cancel" class="right btn btn-secondary">
+                                                    {{?}}
+
+                                                 <input type="hidden" name="cancel_id" id="cancel_id">
+                                                </td>
+                                                <script type="text/javascript">
+                                                    function getConfirmation(cancel_id) {                                                           
+                                                           var retVal = confirm("Are you sure to cancel ?");
+                                                           if( retVal == true ) {
+                                                              document.getElementById('cancel_id').value = cancel_id;                                                
+                                                              document.getElementById('withdraw-cancel').submit();
+                                                           } else {                                                              
+                                                              return false;
+                                                           }
+                                                        }
+                                                </script>
+                                                </form>    
+                                            </tr>
+                                        {{~}}
+                                    </tbody>
+                                </table>
+                            {{??}}
+                                <br>
+                                <br>
+                                <br>
+                                <p>You have no withdrawals in your account.</p>
+                            {{?}}
+                                    <a href="#" class="optin-close">&times;</a>
+                                </div>
+                    </div>
+                  
+
+                    <div class="bg-overlay" id="widthdraw-request">
+                        <div class="subscribe-optin">
+                            <h4>Withdrawal WoW</h4>
+            
+                            <p>
+                                <strong>Note:</strong> If you bet on the current game, some of the balance may not be withdrawn.
+                            </p>
+                            <form action="/withdraw-request" method="post">
+                                <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+                                <input style="display:none" type="text" name="fakeusernameremembered"/>
+                                <input style="display:none" type="password" name="fakepasswordremembered"/>
+
+                                <label for="amount">WoW amount</label>
+                                <input oninput="updateTotal()" type="number" id="amount" name="amount" placeholder="Min {{= it.minWithdraw }} Bits" min="{{= it.minWithdraw }}" step="0.01" required/>
+                                <label for="destination">Destination Address</label>
+                                <input type="text" id="destination" name="destination" required/>
+                                <label for="password">Your password</label>
+                                <input type="password" id="password" name="password" autocomplete="off"/>
+                                {{?it.user.mfa_secret}}
+                                    <label for="otp">2FA Code</label>
+                                    <input type="text" id="otp" name="otp" autocomplete="off" pattern="[0-9]{6}" required />
+                                {{?}}
+
+                                <a href="#withdraw" class="border-button ">Back</a>
+                                <div class="right">
+                                    <span style="font-size: 12px; color:#484848; margin-right: 3px; margin-top: 10px;">FEE: {{= it.miningFee}} WoW // <strong>TOTAL: <span id="total">0</span> WoW</strong></span>
+
+
+                                    <!--Tip send Button unactive STATUS-->
+                                    <!--input class="border-button right blue" type="submit" value="Proceed"/-->
+                                    <!--Tip send Button unactive STATUS-->
+                                </div>
+                                <input type="hidden" name="withdrawal_id" value="{{= it.id}}" />
+                            </form>
+                            <a href="#" class="optin-close">&times;</a>
+                        </div>
+                    </div>
+                </div><!-- end withdraw -->
+                <div class="support">
+                    <div class="box">
+                        <a class="button arrow" href="#support">Support</a>
+                    </div>
+                    <div class="bg-overlay" id="support">
+                                <div class="subscribe-optin">
+                                    <h5>Need help? <br> <br>Please contact to <br> <br>Telegram @wowgohelper</h5>
+                                    <a href="#" class="optin-close">&times;</a>
+                                </div>
+                    </div>
+                </div><!-- end support -->
+               
+            </div>
+         </div>  
+    <div class="col-md-12 col-sm-12 nopadding right-column" style="margin-top: 10px;">
+         <div class="col-md-6 col-sm-12 center">
+            <div class="logout">
+                <div class="box">
+                    <a onclick="logout();" class="logout-btn">
+                        Logout
+                    </a>
+                </div>
+            </div><!-- end logout -->
+         </div>
+    </div>
+    </div> 
+
+    
+    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+   $(document).ready(function () {
+    $('input[type="radio"][name="currency_type"]').change(function() {            
+            var inputValue = $(this).attr("value");            
+            if(inputValue == 'ETH'){
+                $('#dep_eth').show("slow");        
+                $('#dep_usd').hide();
+                $('#dep_krw').hide();
+                $('#dep_vnd').hide(); 
+            }
+            else if(inputValue == 'USD'){
+                $('#dep_usd').show("slow");        
+                $('#dep_eth').hide(); 
+                $('#dep_krw').hide();
+                $('#dep_vnd').hide();  
+            }
+            else if(inputValue == 'KRW'){
+                $('#dep_krw').show("slow");        
+                $('#dep_eth').hide();
+                $('#dep_usd').hide();
+                $('#dep_vnd').hide();   
+            }
+            else if(inputValue == 'VND'){
+                $('#dep_vnd').show("slow");        
+                $('#dep_eth').hide(); 
+                $('#dep_usd').hide();
+                $('#dep_krw').hide();  
+            }
+            else{}
+            
+    }); 
+
+    $('input[type="radio"][name="withdraw_currency"]').change(function() {
+            var inputValue = $(this).attr("value");            
+            if(inputValue == 'ETH'){
+                $('#with_eth').show("slow");        
+                $('#with_usd').hide();
+                $('#with_krw').hide();
+                $('#with_vnd').hide(); 
+            }
+            else if(inputValue == 'USD'){
+                $('#with_usd').show("slow");        
+                $('#with_eth').hide(); 
+                $('#with_krw').hide();
+                $('#with_vnd').hide();  
+            }
+            else if(inputValue == 'KRW'){
+                $('#with_krw').show("slow");        
+                $('#with_eth').hide();
+                $('#with_usd').hide();
+                $('#with_vnd').hide();   
+            }
+            else if(inputValue == 'VND'){
+                $('#with_vnd').show("slow");        
+                $('#with_eth').hide(); 
+                $('#with_usd').hide();
+                $('#with_krw').hide();  
+            }
+            else{}
+            
+    }); 
+
+   $.ajax({
+                type: 'GET',
+                url : 'https://api.etherscan.io/api?module=stats&action=ethprice&result=ethusd&get=ethusd&apikey=VHT75SBSCA3GTIS5AKPMAC2SAI1M81TIPQ',
+                success: function(data){
+                
+                 document.getElementById("usd").innerHTML=("1 wow ="+(data.result.ethusd/100000).toFixed(5)+" USD");
+                
+               }
+            });
+
+	$('.currencychange').keyup(function () {
+        $.ajax({
+                  type: 'GET',
+                  url : 'https://api.etherscan.io/api?module=stats&action=ethprice&result=ethusd&get=ethusd&apikey=VHT75SBSCA3GTIS5AKPMAC2SAI1M81TIPQ',
+                  success: function(data){
+                                  
+                   var num1 = $('#usdamt').val();
+                  
+                  var num2=(data.result.ethusd/100000).toFixed(5);
+                  
+                  var result=parseInt(num1/num2);
+                  
+                  $('#wowamt').val(result);
+                    
+                  
+                 }
+              });
+        
+     });
+      setInterval(function() {  
+                    changenum()
+                   
+                    }, 600000);
+});
+   function changenum(){
+            $.ajax({
+                type: 'GET',
+                url : 'https://api.etherscan.io/api?module=stats&action=ethprice&result=ethusd&get=ethusd&apikey=VHT75SBSCA3GTIS5AKPMAC2SAI1M81TIPQ',
+                success: function(data){
+               
+                document.getElementById("usd").innerHTML=("1 wow ="+(data.result.ethusd/100000).toFixed(5)+ " USD");               
+
+               }
+            });
+   }
+
+   $('#krwamt').keyup(function () {
+        $.ajax({
+                type: 'GET',
+                url : 'http://www.apilayer.net/api/live?access_key=3d80628a263cbf035fb5e2e2084fdc44',
+                success: function(data){
+                var usd_change =  data.quotes.USDKRW; 
+                var usd_value  =  $('#krwamt').val() / usd_change;
+               
+
+                    $.ajax({
+                      type: 'GET',
+                      url : 'https://api.etherscan.io/api?module=stats&action=ethprice&result=ethusd&get=ethusd&apikey=VHT75SBSCA3GTIS5AKPMAC2SAI1M81TIPQ',
+                      success: function(data){
+                                      
+                      var num1 = usd_value;
+                      
+                      var num2=(data.result.ethusd/100000).toFixed(5);
+                      
+                      var result=parseInt(num1/num2);
+                      
+                      $('#krw_wow_amt').val(result);
+                        
+                      
+                     }
+                  });
+
+                  setInterval(function() {  
+                    changenum()
+                   
+                    }, 600000);                 
+               }
+            });
+     });
+
+   $('#vndamt').keyup(function () {
+        $.ajax({
+                type: 'GET',
+                url : 'http://www.apilayer.net/api/live?access_key=3d80628a263cbf035fb5e2e2084fdc44',
+                success: function(data){
+                var usd_change =  data.quotes.USDVND; 
+                var usd_value  =  $('#vndamt').val() / usd_change;
+               
+
+                    $.ajax({
+                      type: 'GET',
+                      url : 'https://api.etherscan.io/api?module=stats&action=ethprice&result=ethusd&get=ethusd&apikey=VHT75SBSCA3GTIS5AKPMAC2SAI1M81TIPQ',
+                      success: function(data){
+                                      
+                      var num1 = usd_value;
+                      
+                      var num2=(data.result.ethusd/100000).toFixed(5);
+                      
+                      var result=parseInt(num1/num2);
+                      
+                      $('#vnd_wow_amt').val(result);
+                        
+                      
+                     }
+                  });
+
+                  setInterval(function() {  
+                    changenum()
+                   
+                    }, 600000);                 
+               }
+            });
+     });
+
+   
+   $('#usd_amount').keyup(function () {       
+    var usd_value = $('#usd_amount').val();
+        $.ajax({
+          type: 'GET',
+          url : 'https://api.etherscan.io/api?module=stats&action=ethprice&result=ethusd&get=ethusd&apikey=VHT75SBSCA3GTIS5AKPMAC2SAI1M81TIPQ',
+          success: function(data){                          
+          var num1 = usd_value;          
+          var num2=(data.result.ethusd/100000).toFixed(5);
+          var res =    parseInt(num1*num2) ;       
+          var result=parseInt(num1*num2) + '  USD';          
+          $('#usd_with_amt').text(result);           
+          $('#usd_change_value').val(res);
+         }
+      });
+
+      setInterval(function() {  
+        changenum()
+       
+        }, 600000);           
+     });
+
+   $('#krw_amount').keyup(function () {
+       var wow_value = $('#krw_amount').val(); 
+
+        $.ajax({
+          type: 'GET',
+          url : 'https://api.etherscan.io/api?module=stats&action=ethprice&result=ethusd&get=ethusd&apikey=VHT75SBSCA3GTIS5AKPMAC2SAI1M81TIPQ',
+          success: function(data){
+                          
+          var num1 = wow_value;
+          
+          var num2=(data.result.ethusd/100000).toFixed(5);
+          
+          var result=parseInt(num1*num2);
+          
+          $.ajax({
+                type: 'GET',
+                url : 'http://www.apilayer.net/api/live?access_key=3d80628a263cbf035fb5e2e2084fdc44',
+                success: function(data){
+                var usd_change =  data.quotes.USDKRW; 
+                var krw_value  =  result * usd_change;
+                var krw_text =   result * usd_change + ' KRW';              
+                $('#krw_with_amt').text(krw_text);
+                $('#krw_change_value').val(krw_value);
+            }
+        });         
+          
+         }
+      });
+
+      setInterval(function() {  
+        changenum()
+       
+        }, 600000);                 
+               
+     });
+
+  $('#vnd_amount').keyup(function () {
+       var wow_value = $('#vnd_amount').val(); 
+
+        $.ajax({
+          type: 'GET',
+          url : 'https://api.etherscan.io/api?module=stats&action=ethprice&result=ethusd&get=ethusd&apikey=VHT75SBSCA3GTIS5AKPMAC2SAI1M81TIPQ',
+          success: function(data){
+                          
+          var num1 = wow_value;
+          
+          var num2=(data.result.ethusd/100000).toFixed(5);
+          
+          var result=parseInt(num1*num2);
+          
+          $.ajax({
+                type: 'GET',
+                url : 'http://www.apilayer.net/api/live?access_key=3d80628a263cbf035fb5e2e2084fdc44',
+                success: function(data){
+                var usd_change =  data.quotes.USDVND; 
+                var vnd_value  =  result * usd_change;
+                var vnd_text =   result * usd_change + ' VND';
+                
+                $('#vnd_with_amt').text(vnd_value);
+                $('#vnd_change_value').val(vnd_value);
+            }
+        });         
+          
+         }
+      });
+
+      setInterval(function() {  
+        changenum()
+       
+        }, 600000);                 
+               
+     });
+
+   
+</script>
+#}}
+{{#def.include('./template/main_new')}}

