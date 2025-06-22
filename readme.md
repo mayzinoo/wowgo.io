@@ -24,6 +24,7 @@ for the password again.
     sudo -u postgres createdb -O DatabaseUserName DatabaseName
 
 
+
 Configuration
 =============
 
@@ -41,6 +42,9 @@ Running
 =======
 
 Run `npm start`. By default it will listen on port `3841`.
+
+![wowgo](https://github.com/user-attachments/assets/ec4779c7-3733-4b78-a265-01bd3c4b93d9)
+
 
 
 
